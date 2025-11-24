@@ -4,7 +4,7 @@ library(leaflet)
 ui <- navbarPage(
   title = "Global COVID-19 Dashboard",
   
-  # ---Panel 1: Monthly trends---
+  # Panel 1: Monthly trends
   tabPanel(
     "Monthly trends",
     sidebarLayout(
@@ -36,6 +36,14 @@ ui <- navbarPage(
           end   = as.Date("2021-12-31"),
           min   = as.Date("2020-01-01"),
           max   = as.Date("2022-03-05")
+        ),
+        
+        tags$hr(),
+        p(
+          "Europe, Asia, and North America tend to show some of the highest spikes,",
+          "especially in mid-to-late 2021. South America follows similar shapes but",
+          "has lower peaks. Africa and Oceania stay much lower overall, though they",
+          "still show seasonal increases."
         )
       ),
       mainPanel(
@@ -44,7 +52,7 @@ ui <- navbarPage(
     )
   ),
   
-  # ---Panel 2: Geographic spread---
+  # Panel 2: Geographic spread
   tabPanel(
     "Geographic spread",
     sidebarLayout(
@@ -86,7 +94,7 @@ ui <- navbarPage(
     )
   ),
   
-  # ---Panel 3: Summary table--
+  # Panel 3: Summary table
   tabPanel(
     "Summary table",
     sidebarLayout(
@@ -107,7 +115,15 @@ ui <- navbarPage(
           value = as.Date("2021-01-01"),
           step  = 30,
           timeFormat = "%b %Y"
+        ),
+        
+        tags$hr(),
+        p(
+          "This table lists the top 10 countries with the highest total COVID-19 cases",
+          "for the selected month. You can compare how countries differ in new cases,",
+          "new deaths, and cumulative totals."
         )
+        
       ),
       mainPanel(
         h3("Top 10 countries – summary table"),
@@ -117,7 +133,7 @@ ui <- navbarPage(
     )
   ),
   
-  # --- Panel 4: Total COVID Deaths or Cases (Teammate barplot) ---
+  # Panel 4: Total COVID Deaths or Cases
   
   tabPanel(
     "Total deaths/cases by country",
@@ -160,7 +176,7 @@ ui <- navbarPage(
     )
   ),
   
-  # --- Panel 5: COVID Cases vs. Deaths (Teammate scatterplot) ---
+  # Panel 5: COVID Cases vs Deaths
   tabPanel(
     "Cases vs. deaths (scatterplot)",
     sidebarLayout(
@@ -184,6 +200,17 @@ ui <- navbarPage(
           "trend",
           "Add Trend Line?",
           FALSE
+        ),
+        
+        tags$hr(),
+        p(
+          "This plot compares new COVID-19 cases and new deaths for the chosen location.",
+          "Each point represents one day. Clusters near the bottom-left show days with low",
+          "transmission, while points farther out indicate periods with more severe outbreaks."
+        ),
+        p(
+          "Turning on the trend line helps you see whether deaths rise proportionally with cases",
+          "or whether the relationship is weaker at certain times."
         )
       ),
       mainPanel(
