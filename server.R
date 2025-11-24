@@ -30,7 +30,7 @@ server <- function(input, output) {
   covid_data <- df %>%
     filter(!is.na(continent))
   
-  # PANEL 1:MONTHLY TRENDS (LINE CHART)
+  # Panel 1: Line chart
   
   monthly_data <- reactive({
     metric <- input$metric_trend
@@ -100,7 +100,7 @@ server <- function(input, output) {
           breaks = c(1e3, 1e4, 1e5, 1e6, 1e7),  
           minor_breaks = NULL                  
         ) +
-        theme(panel.grid.minor.y = element_blank())  
+        theme(panel.grid.minor.y = element_blank()) 
     } else {
       p <- p +
         scale_y_continuous(labels = label_number(scale_cut = cut_short_scale()))
@@ -110,7 +110,7 @@ server <- function(input, output) {
   })
   
   
-  # PANEL 2: GEOMAP (LEAFLET)
+  # Panel 2: Geomap 
   
   # Monthly aggregated data per country (cases, deaths, population, rates)
   geo_monthly_data <- reactive({
@@ -224,7 +224,7 @@ server <- function(input, output) {
       )
   })
   
-  # PANEL 3: SUMMARY TABLE (SEPARATE TAB)
+  # Panel 3: Summary table
   
   table_monthly_data <- reactive({
     req(input$table_month)
@@ -288,7 +288,7 @@ server <- function(input, output) {
       )
   })
   
-  #  PANEL 4: Total COVID Deaths or Cases (Teammate barplot)
+  # Panel 4: Total Covid Deaths or Cases
 
   covid_continent <- reactive({
     req(input$continent, input$input, input$metric_type)
@@ -328,9 +328,8 @@ server <- function(input, output) {
     data %>%
       slice_head(n = input$n_results)
   })
+
   
-  
-  # Plot: total or rate, deaths or cases, by country
   output$covid_plot1 <- renderPlot({
     req(input$input, input$metric_type)
     
@@ -342,17 +341,17 @@ server <- function(input, output) {
         y_var  <- "total_deaths"
         y_lab  <- "Total deaths"
         title_ <- "Total COVID-19 Deaths by Country"
-      } else {  # Rate (per person)
+      } else { 
         y_var  <- "death_rate"
         y_lab  <- "Deaths per person"
         title_ <- "COVID-19 Death Rate by Country"
       }
-    } else {  # Cases
+    } else {  
       if (input$metric_type == "Total") {
         y_var  <- "total_cases"
         y_lab  <- "Total cases"
         title_ <- "Total COVID-19 Cases by Country"
-      } else {  # Rate (per person)
+      } else { 
         y_var  <- "case_rate"
         y_lab  <- "Cases per person"
         title_ <- "COVID-19 Case Rate by Country"
@@ -370,7 +369,7 @@ server <- function(input, output) {
       theme_minimal()
   })
   
-  #  PANEL 5: COVID Cases vs. Deaths (Teammate scatterplot)
+  #  Panel 5: Covid Cases vs Deaths 
   
   covid_location <- reactive({
     req(input$location, input$date)
