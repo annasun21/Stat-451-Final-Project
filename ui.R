@@ -1,80 +1,194 @@
 library(shiny)
-library(shinydashboard)
-library(tidyverse)
+library(leaflet)
 
-covid_data <- read_csv("covid-data.csv")
-
-covid_data <- covid_data %>%
-  filter(!is.na(continent))
-
-header <- dashboardHeader(title = "Dashboard")
-
-sidebar <- dashboardSidebar(
-  sidebarMenu(
-    menuItem("Home", tabName = "home", icon = icon("home")),
-    menuItem("Total COVID Deaths or Cases", tabName = "continent"),
-    menuItem("COVID Cases vs. Deaths", tabName = "location")
-  )
-)
-
-body <- dashboardBody(
-  tabItems(
-    tabItem(
-      tabName = "home",
-      fluidRow(
-        box(
-          width = 12,
-          title = "COVID Data Table",
-          tableOutput("covid_table")
-        )
-      )
-    ),
-    
-    tabItem(
-      tabName = "continent",
-      fluidRow(
-        box(
-          title = "Controls", width = 4,
-          radioButtons("input", "Total Deaths or Cases:", 
-                       choices = c("Deaths", "Cases"),
-                       selected = "Deaths"),
-          selectInput("continent", "Select Continent:",
-                      choices = sort(unique(covid_data$continent))),
-          sliderInput("n_results", "Number of Countries:", min = 1, max = 55, value = 10),
-          radioButtons("order", "Sort Order:", 
-                       choices = c("Descending" = "desc", "Ascending" = "asc"),
-                       selected = "desc")
+ui <- navbarPage(
+  title = "Global COVID-19 Dashboard",
+  
+  # ---Panel 1: Monthly trends---
+  tabPanel(
+    "Monthly trends",
+    sidebarLayout(
+      sidebarPanel(
+        checkboxGroupInput(
+          "continents_trend",
+          label   = "Select continents:",
+          choices = c("Asia", "Europe", "North America",
+                      "South America", "Africa", "Oceania"),
+          selected = c("Asia", "Europe", "North America",
+                       "South America", "Africa", "Oceania")
         ),
-        box(
-          title = "Total COVID Deaths or Cases", width = 8,
-          plotOutput("covid_plot1")
-        )
-      )
-    ),
-    
-    tabItem(
-      tabName = "location",
-      fluidRow(
-        box(
-          title = "Controls", width = 4,
-          selectInput("location", "Select Location:",
-                      choices = sort(unique(covid_data$location))),
-          dateRangeInput("date", "Select Date Range:",
-                         start = min(covid_data$date),
-                         end = max(covid_data$date),
-                         min = min(covid_data$date),
-                         max = max(covid_data$date),
-                         format = "yyyy-mm-dd",
-                         separator = " to "),
-          checkboxInput("trend", "Add Trend Line?", FALSE)
+        selectInput(
+          "metric_trend",
+          label = "Select metric:",
+          choices = c("New cases"  = "new_cases",
+                      "New deaths" = "new_deaths"),
+          selected = "new_cases"
         ),
-        box(
-          title = "COVID Cases vs. Deaths", width = 8,
-          plotOutput("covid_plot2")
+        checkboxInput(
+          "log_scale",
+          label = "Use log scale?",
+          value = TRUE
+        ),
+        dateRangeInput(
+          "trend_dates",
+          label = "Date range:",
+          start = as.Date("2021-01-01"),
+          end   = as.Date("2021-12-31"),
+          min   = as.Date("2020-01-01"),
+          max   = as.Date("2022-03-05")
         )
+      ),
+      mainPanel(
+        plotOutput(outputId = "plot1")
+      )
+    )
+  ),
+  
+  # ---Panel 2: Geographic spread---
+  tabPanel(
+    "Geographic spread",
+    sidebarLayout(
+      sidebarPanel(
+        checkboxGroupInput(
+          "continents_geo",
+          label   = "Select continents:",
+          choices = c("Asia", "Europe", "North America",
+                      "South America", "Africa", "Oceania"),
+          selected = c("Asia", "Europe", "North America",
+                       "South America", "Africa", "Oceania")
+        ),
+        radioButtons(
+          "geo_metric_type",
+          label = "Metric:",
+          choices = c(
+            "New Cases (Total)"        = "cases_total",
+            "New Deaths (Total)"       = "deaths_total",
+            "New Cases (Rate/person)"  = "cases_rate",
+            "New Deaths (Rate/person)" = "deaths_rate"
+          ),
+          selected = "cases_total"
+        ),
+        sliderInput(
+          "geo_month",
+          label = "Select month:",
+          min   = as.Date("2020-01-01"),
+          max   = as.Date("2022-03-05"),
+          value = as.Date("2021-01-01"),
+          step  = 30,
+          timeFormat = "%b %Y"
+        )
+      ),
+      mainPanel(
+        h3("Geographic spread of COVID-19 new cases/deaths"),
+        p("Monthly totals and rates from Jan 2020 to Mar 2022"),
+        leafletOutput("geo_map", height = 600)
+      )
+    )
+  ),
+  
+  # ---Panel 3: Summary table--
+  tabPanel(
+    "Summary table",
+    sidebarLayout(
+      sidebarPanel(
+        checkboxGroupInput(
+          "continents_table",
+          label   = "Select continents:",
+          choices = c("Asia", "Europe", "North America",
+                      "South America", "Africa", "Oceania"),
+          selected = c("Asia", "Europe", "North America",
+                       "South America", "Africa", "Oceania")
+        ),
+        sliderInput(
+          "table_month",
+          label = "Select month:",
+          min   = as.Date("2020-01-01"),
+          max   = as.Date("2022-03-05"),
+          value = as.Date("2021-01-01"),
+          step  = 30,
+          timeFormat = "%b %Y"
+        )
+      ),
+      mainPanel(
+        h3("Top 10 countries – summary table"),
+        p("Ranked by total COVID-19 cases"),
+        tableOutput("geo_table")
+      )
+    )
+  ),
+  
+  # --- Panel 4: Total COVID Deaths or Cases (Teammate barplot) ---
+  
+  tabPanel(
+    "Total deaths/cases by country",
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons(
+          "input",
+          "Deaths or Cases:",
+          choices  = c("Deaths", "Cases"),
+          selected = "Deaths"
+        ),
+        radioButtons(
+          "metric_type",
+          "Metric type:",
+          choices  = c("Total", "Rate (per person)"),
+          selected = "Total"
+        ),
+        selectInput(
+          "continent",
+          "Select Continent:",
+          choices = sort(unique(df$continent[!is.na(df$continent)]))
+        ),
+        sliderInput(
+          "n_results",
+          "Number of Countries:",
+          min   = 1,
+          max   = 55,
+          value = 10
+        ),
+        radioButtons(
+          "order",
+          "Sort Order:",
+          choices  = c("Descending" = "desc", "Ascending" = "asc"),
+          selected = "desc"
+        )
+      ),
+      mainPanel(
+        plotOutput("covid_plot1")
+      )
+    )
+  ),
+  
+  # --- Panel 5: COVID Cases vs. Deaths (Teammate scatterplot) ---
+  tabPanel(
+    "Cases vs. deaths (scatterplot)",
+    sidebarLayout(
+      sidebarPanel(
+        selectInput(
+          "location",
+          "Select Location:",
+          choices = sort(unique(df$location))
+        ),
+        dateRangeInput(
+          "date",
+          "Select Date Range:",
+          start = min(df$date),
+          end   = max(df$date),
+          min   = min(df$date),
+          max   = max(df$date),
+          format    = "yyyy-mm-dd",
+          separator = " to "
+        ),
+        checkboxInput(
+          "trend",
+          "Add Trend Line?",
+          FALSE
+        )
+      ),
+      mainPanel(
+        plotOutput("covid_plot2")
       )
     )
   )
 )
-
-dashboardPage(header, sidebar, body)
