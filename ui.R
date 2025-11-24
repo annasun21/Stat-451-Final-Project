@@ -1,5 +1,20 @@
+library(tidyverse)
 library(shiny)
 library(leaflet)
+
+# Data loading 
+df_raw <- read_csv("owid-covid-data.csv", show_col_types = FALSE)
+
+df <- df_raw %>%
+  select(
+    iso_code,
+    continent, location, date,
+    new_cases, total_cases,
+    new_deaths, total_deaths,
+    population, total_vaccinations,
+    people_vaccinated
+  ) %>%
+  mutate(date = as.Date(date))
 
 ui <- navbarPage(
   title = "Global COVID-19 Dashboard",
