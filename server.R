@@ -97,10 +97,10 @@ server <- function(input, output) {
       p <- p +
         scale_y_log10(
           labels = label_number(scale_cut = cut_short_scale()),
-          breaks = c(1e3, 1e4, 1e5, 1e6, 1e7),  # clean labeled breaks only
-          minor_breaks = NULL                  # remove minor ticks
+          breaks = c(1e3, 1e4, 1e5, 1e6, 1e7),  
+          minor_breaks = NULL                  
         ) +
-        theme(panel.grid.minor.y = element_blank())  # remove minor grid lines
+        theme(panel.grid.minor.y = element_blank())  
     } else {
       p <- p +
         scale_y_continuous(labels = label_number(scale_cut = cut_short_scale()))
