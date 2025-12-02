@@ -1,3 +1,24 @@
+## INTRODUCTION
+-
+-
+-
+## DATA
+-
+-
+-
 Shiny Application using data from https://www.kaggle.com/datasets/georgesaavedra/covid19-dataset
 
-Question we are exploring: What does the relationship between COVID-19 cases and deaths look like across the world?
+## RESEARCH QUESTIONS
+### Main research question.
+
+- How does the relationship between COVID-19 cases and deaths vary across countries and over time?
+
+### Specific questions of interest. 
+
+1. ...
+2. ...
+3. ...
+4. ...
+5. ...
+
+
