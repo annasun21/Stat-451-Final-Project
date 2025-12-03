@@ -90,8 +90,8 @@ ui <- navbarPage(
           choices = c(
             "New Cases (Total)"        = "cases_total",
             "New Deaths (Total)"       = "deaths_total",
-            "New Cases (Rate/person)"  = "cases_rate",
-            "New Deaths (Rate/person)" = "deaths_rate"
+            "New Cases (per 100k people)"  = "cases_rate",
+            "New Deaths (per 100k people)" = "deaths_rate"
           ),
           selected = "cases_total"
         ),
