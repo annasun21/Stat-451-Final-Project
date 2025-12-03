@@ -133,8 +133,8 @@ server <- function(input, output) {
         .groups = "drop"
       ) %>%
       mutate(
-        cases_rate  = if_else(population > 0, new_cases  / population, NA_real_),
-        deaths_rate = if_else(population > 0, new_deaths / population, NA_real_)
+        cases_rate  = if_else(population > 0, (new_cases  / population) * 100000, NA_real_),
+        deaths_rate = if_else(population > 0, (new_deaths / population) * 100000 NA_real_)
       )
   })
   
@@ -173,8 +173,8 @@ server <- function(input, output) {
     metric_label <- dplyr::case_when(
       input$geo_metric_type == "cases_total"  ~ "New Cases (Total)",
       input$geo_metric_type == "deaths_total" ~ "New Deaths (Total)",
-      input$geo_metric_type == "cases_rate"   ~ "New Cases (Rate per person)",
-      input$geo_metric_type == "deaths_rate"  ~ "New Deaths (Rate per person)"
+      input$geo_metric_type == "cases_rate"   ~ "New Cases (per 100k people)",
+      input$geo_metric_type == "deaths_rate"  ~ "New Deaths (per 100k people)"
     )
     
     month_label <- format(floor_date(input$geo_month, "month"), "%b %Y")
