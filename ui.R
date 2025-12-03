@@ -1,6 +1,10 @@
-library(tidyverse)
 library(shiny)
+library(tidyverse)
+library(lubridate)
+library(scales)
 library(leaflet)
+library(rnaturalearth)
+library(rnaturalearthdata)
 
 # Data loading 
 df_raw <- read_csv("owid-covid-data.csv", show_col_types = FALSE)
