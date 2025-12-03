@@ -26,7 +26,7 @@ world_sf <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
 server <- function(input, output) {
   
-  # Data for teammate panels (Panels 4 & 5) 
+  # Data for Panels 4 & 5
   covid_data <- df %>%
     filter(!is.na(continent))
   
